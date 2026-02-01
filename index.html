@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Will You Be My Valentine? 💖</title>
   <style>
-    /* Base styling */
     body {
       margin: 0;
       height: 100vh;
@@ -30,16 +29,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 30px; /* space between heading and buttons */
+      gap: 30px;
     }
 
-    /* Buttons container */
     .buttons {
       display: flex;
-      gap: 50px; /* space between YES and NO */
+      gap: 50px;
+      position: relative;
     }
 
-    /* Buttons */
     button {
       border: none;
       cursor: pointer;
@@ -47,7 +45,7 @@
       transition: all 0.3s ease;
       font-weight: bold;
       box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      position: relative; /* relative for wiggle effect */
+      position: relative;
     }
 
     #yesBtn {
@@ -80,7 +78,6 @@
       75% { transform: rotate(-10deg); }
     }
 
-    /* Celebration screen */
     #celebration {
       display: none;
       text-align: center;
@@ -101,7 +98,6 @@
       animation: pop 0.5s ease;
     }
 
-    /* Animations */
     @keyframes fadeIn {
       0% { opacity: 0; }
       100% { opacity: 1; }
@@ -141,28 +137,26 @@
     const celebration = document.getElementById("celebration");
     const bgMusic = document.getElementById("bgMusic");
 
-    // Play music only on first visit
-    const hasVisited = localStorage.getItem("valentineVisited");
-    if (!hasVisited) {
+    // Attempt autoplay on page load
+    window.addEventListener("load", () => {
       bgMusic.play().catch(() => {
-        console.log("Autoplay blocked, music will play on first click.");
+        console.log("Autoplay blocked, music will play on click.");
       });
-      localStorage.setItem("valentineVisited", "true");
-    }
+    });
 
-    // Make "No" button move within viewport
+    // Move "No" button within viewport
     noBtn.addEventListener("mouseover", () => {
       const btnWidth = noBtn.offsetWidth;
       const btnHeight = noBtn.offsetHeight;
 
-      const margin = 10; // safe margin so button doesn't touch edges
+      const margin = 10;
 
-      // Compute max X and Y so button stays fully visible
+      // Ensure button stays fully visible
       const maxX = window.innerWidth - btnWidth - margin;
       const maxY = window.innerHeight - btnHeight - margin;
 
-      const x = Math.random() * maxX + margin;
-      const y = Math.random() * maxY + margin;
+      const x = Math.random() * (maxX - margin) + margin;
+      const y = Math.random() * (maxY - margin) + margin;
 
       noBtn.style.position = "absolute";
       noBtn.style.left = `${x}px`;
@@ -176,7 +170,7 @@
       bgMusic.play().catch(() => {});
     });
 
-    // Fallback: play music on any click
+    // Fallback: play music on first click if autoplay blocked
     document.body.addEventListener("click", () => {
       if (bgMusic.paused) bgMusic.play().catch(() => {});
     }, { once: true });
