@@ -154,10 +154,16 @@
     noBtn.addEventListener("mouseover", () => {
       const btnWidth = noBtn.offsetWidth;
       const btnHeight = noBtn.offsetHeight;
-      const maxX = window.innerWidth - btnWidth;
-      const maxY = window.innerHeight - btnHeight;
-      const x = Math.random() * maxX;
-      const y = Math.random() * maxY;
+
+      const margin = 10; // safe margin so button doesn't touch edges
+
+      // Compute max X and Y so button stays fully visible
+      const maxX = window.innerWidth - btnWidth - margin;
+      const maxY = window.innerHeight - btnHeight - margin;
+
+      const x = Math.random() * maxX + margin;
+      const y = Math.random() * maxY + margin;
+
       noBtn.style.position = "absolute";
       noBtn.style.left = `${x}px`;
       noBtn.style.top = `${y}px`;
