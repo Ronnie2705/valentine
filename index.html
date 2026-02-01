@@ -67,6 +67,9 @@
 </head>
 <body>
 
+  <!-- Background music -->
+  <audio id="bgMusic" src="HIM.mp3" autoplay loop></audio>
+
   <div class="container" id="question">
     <h1>Will you be my Valentine? 💘</h1>
     <button id="yesBtn">YES 💖</button>
@@ -83,6 +86,7 @@
     const yesBtn = document.getElementById("yesBtn");
     const question = document.getElementById("question");
     const celebration = document.getElementById("celebration");
+    const bgMusic = document.getElementById("bgMusic");
 
     noBtn.addEventListener("mouseover", () => {
       const x = Math.random() * (window.innerWidth - 100);
@@ -94,6 +98,7 @@
     yesBtn.addEventListener("click", () => {
       question.style.display = "none";
       celebration.style.display = "block";
+      bgMusic.play(); // ensures music plays if paused
     });
   </script>
 
