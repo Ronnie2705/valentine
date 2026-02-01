@@ -20,13 +20,23 @@
 
     h1 {
       font-size: 3rem;
-      margin-bottom: 40px;
+      margin: 0;
       text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
     }
 
     .container {
       text-align: center;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px; /* space between heading and buttons */
+    }
+
+    /* Buttons container */
+    .buttons {
+      display: flex;
+      gap: 50px; /* space between YES and NO */
     }
 
     /* Buttons */
@@ -35,9 +45,9 @@
       cursor: pointer;
       border-radius: 50px;
       transition: all 0.3s ease;
-      position: absolute;
       font-weight: bold;
       box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      position: relative; /* relative for wiggle effect */
     }
 
     #yesBtn {
@@ -45,13 +55,10 @@
       color: white;
       font-size: 2rem;
       padding: 20px 60px;
-      top: 50%;
-      left: 30%;
-      transform: translate(-50%, -50%);
     }
 
     #yesBtn:hover {
-      transform: translate(-50%, -50%) scale(1.1);
+      transform: scale(1.1);
       box-shadow: 0 8px 20px rgba(255,77,109,0.6);
     }
 
@@ -60,9 +67,6 @@
       color: white;
       font-size: 1rem;
       padding: 10px 20px;
-      top: 50%;
-      left: 70%;
-      transform: translate(-50%, -50%);
     }
 
     #noBtn:hover {
@@ -113,13 +117,15 @@
 <body>
 
   <!-- Background music -->
-  <audio id="bgMusic" src="faf516ea-ee7c-4da7-879a-995dfe174026.mp3" loop></audio>
+  <audio id="bgMusic" src="HIM.mp3" loop></audio>
 
   <!-- Question screen -->
   <div class="container" id="question">
     <h1>Will you be my Valentine? 💘</h1>
-    <button id="yesBtn">YES 💖</button>
-    <button id="noBtn">no</button>
+    <div class="buttons">
+      <button id="yesBtn">YES 💖</button>
+      <button id="noBtn">no</button>
+    </div>
   </div>
 
   <!-- Celebration screen -->
@@ -144,7 +150,7 @@
       localStorage.setItem("valentineVisited", "true");
     }
 
-    // Make "No" button move but stay on screen
+    // Make "No" button move within viewport
     noBtn.addEventListener("mouseover", () => {
       const btnWidth = noBtn.offsetWidth;
       const btnHeight = noBtn.offsetHeight;
@@ -152,6 +158,7 @@
       const maxY = window.innerHeight - btnHeight;
       const x = Math.random() * maxX;
       const y = Math.random() * maxY;
+      noBtn.style.position = "absolute";
       noBtn.style.left = `${x}px`;
       noBtn.style.top = `${y}px`;
     });
