@@ -12,7 +12,7 @@
       align-items: center;
       background: linear-gradient(135deg, #ff758c, #ff7eb3, #ffe5ec);
       font-family: 'Cursive', 'Segoe UI', sans-serif;
-      overflow: hidden;
+      overflow: hidden; /* Prevents scrollbars if button moves near edge */
       position: relative;
       color: #fff;
     }
@@ -21,6 +21,7 @@
       font-size: 3rem;
       margin: 0;
       text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+      text-align: center;
     }
 
     .container {
@@ -30,22 +31,25 @@
       flex-direction: column;
       align-items: center;
       gap: 30px;
+      z-index: 10;
     }
 
     .buttons {
       display: flex;
       gap: 50px;
       position: relative;
+      min-height: 60px; /* Space for buttons */
+      width: 100%;
+      justify-content: center;
     }
 
     button {
       border: none;
       cursor: pointer;
       border-radius: 50px;
-      transition: all 0.3s ease;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
       font-weight: bold;
       box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      position: relative;
     }
 
     #yesBtn {
@@ -53,6 +57,7 @@
       color: white;
       font-size: 2rem;
       padding: 20px 60px;
+      z-index: 20;
     }
 
     #yesBtn:hover {
@@ -65,11 +70,8 @@
       color: white;
       font-size: 1rem;
       padding: 10px 20px;
-    }
-
-    #noBtn:hover {
-      animation: wiggle 0.3s;
-      background: linear-gradient(135deg, #ff4d6d, #ff80ab);
+      position: relative; /* Starts relative, becomes absolute on hover */
+      z-index: 15;
     }
 
     @keyframes wiggle {
@@ -86,6 +88,7 @@
 
     #celebration img {
       width: 350px;
+      max-width: 90vw;
       border-radius: 20px;
       box-shadow: 0 5px 20px rgba(255,77,109,0.5);
     }
@@ -98,24 +101,14 @@
       animation: pop 0.5s ease;
     }
 
-    @keyframes fadeIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-
-    @keyframes pop {
-      0% { transform: scale(0); }
-      70% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
+    @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+    @keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
   </style>
 </head>
 <body>
 
-  <!-- Background music -->
-  <audio id="bgMusic" src="HIM.mp3" loop></audio>
+  <audio id="bgMusic" src="HIM.mp3" loop preload="auto"></audio>
 
-  <!-- Question screen -->
   <div class="container" id="question">
     <h1>Will you be my Valentine? 💘</h1>
     <div class="buttons">
@@ -124,7 +117,6 @@
     </div>
   </div>
 
-  <!-- Celebration screen -->
   <div class="container" id="celebration">
     <h2>YAYYYYY!!! 🥰🎉</h2>
     <img src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif" alt="celebration" />
@@ -137,43 +129,55 @@
     const celebration = document.getElementById("celebration");
     const bgMusic = document.getElementById("bgMusic");
 
-    // Attempt autoplay on page load
-    window.addEventListener("load", () => {
-      bgMusic.play().catch(() => {
-        console.log("Autoplay blocked, music will play on click.");
-      });
+    // FUNCTION TO PLAY MUSIC
+    const playMusic = () => {
+        bgMusic.play().then(() => {
+            console.log("Music playing!");
+            // Remove the listeners once music starts
+            window.removeEventListener("mousemove", playMusic);
+            window.removeEventListener("touchstart", playMusic);
+            window.removeEventListener("click", playMusic);
+        }).catch(err => {
+            console.log("Waiting for user interaction...");
+        });
+    };
+
+    // MUSIC AUTOPLAY FIX: Listen for any interaction
+    window.addEventListener("click", playMusic);
+    window.addEventListener("mousemove", playMusic);
+    window.addEventListener("touchstart", playMusic);
+
+    // NO BUTTON MOVEMENT FIX
+    noBtn.addEventListener("mouseover", moveButton);
+    noBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault(); // Prevents clicking on mobile, just moves it
+        moveButton();
     });
 
-    // Move "No" button within viewport
-    noBtn.addEventListener("mouseover", () => {
+    function moveButton() {
       const btnWidth = noBtn.offsetWidth;
       const btnHeight = noBtn.offsetHeight;
 
-      const margin = 10;
+      // Calculate available space (viewport minus button size and a small margin)
+      const padding = 20;
+      const maxX = window.innerWidth - btnWidth - padding;
+      const maxY = window.innerHeight - btnHeight - padding;
 
-      // Ensure button stays fully visible
-      const maxX = window.innerWidth - btnWidth - margin;
-      const maxY = window.innerHeight - btnHeight - margin;
+      // Random position within safe bounds
+      const x = Math.max(padding, Math.floor(Math.random() * maxX));
+      const y = Math.max(padding, Math.floor(Math.random() * maxY));
 
-      const x = Math.random() * (maxX - margin) + margin;
-      const y = Math.random() * (maxY - margin) + margin;
+      noBtn.style.position = "fixed"; // Using fixed ensures it's relative to the screen
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    }
 
-      noBtn.style.position = "absolute";
-      noBtn.style.left = `${x}px`;
-      noBtn.style.top = `${y}px`;
-    });
-
-    // Show celebration when "Yes" clicked
+    // YES BUTTON CLICK
     yesBtn.addEventListener("click", () => {
       question.style.display = "none";
       celebration.style.display = "block";
-      bgMusic.play().catch(() => {});
+      playMusic(); // Ensure music is on
     });
-
-    // Fallback: play music on first click if autoplay blocked
-    document.body.addEventListener("click", () => {
-      if (bgMusic.paused) bgMusic.play().catch(() => {});
-    }, { once: true });
   </script>
 
 </body>
