@@ -4,15 +4,24 @@
   <meta charset="UTF-8" />
   <title>Will You Be My Valentine? 💖</title>
   <style>
+    /* Base styling */
     body {
       margin: 0;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #ff758c, #ff7eb3, #ffe5ec);
+      font-family: 'Cursive', 'Segoe UI', sans-serif;
       overflow: hidden;
+      position: relative;
+      color: #fff;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 40px;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
     }
 
     .container {
@@ -20,36 +29,45 @@
       position: relative;
     }
 
-    h1 {
-      font-size: 3rem;
-      color: #fff;
-      margin-bottom: 40px;
-    }
-
+    /* Buttons */
     button {
       border: none;
       cursor: pointer;
-      border-radius: 12px;
-      transition: all 0.2s ease;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      position: absolute;
+      font-weight: bold;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
     #yesBtn {
-      background-color: #ff4d6d;
+      background: linear-gradient(135deg, #ff4d6d, #ff80ab);
       color: white;
       font-size: 2rem;
       padding: 20px 60px;
-      margin-right: 20px;
+      top: 50%;
+      left: 30%;
+      transform: translate(-50%, -50%);
+    }
+
+    #yesBtn:hover {
+      transform: translate(-50%, -50%) scale(1.1);
+      box-shadow: 0 8px 20px rgba(255,77,109,0.6);
     }
 
     #noBtn {
-      background-color: #444;
+      background: linear-gradient(135deg, #8c8c8c, #b3b3b3);
       color: white;
       font-size: 1rem;
       padding: 10px 20px;
-      position: absolute;
       top: 50%;
-      left: 50%;
+      left: 70%;
       transform: translate(-50%, -50%);
+    }
+
+    #noBtn:hover {
+      animation: wiggle 0.3s;
+      background: linear-gradient(135deg, #ff4d6d, #ff80ab);
     }
 
     @keyframes wiggle {
@@ -58,38 +76,53 @@
       75% { transform: rotate(-10deg); }
     }
 
-    #noBtn:hover {
-      animation: wiggle 0.3s;
-    }
-
+    /* Celebration screen */
     #celebration {
       display: none;
       text-align: center;
+      animation: fadeIn 1s ease forwards;
     }
 
     #celebration img {
       width: 350px;
       border-radius: 20px;
+      box-shadow: 0 5px 20px rgba(255,77,109,0.5);
     }
 
     #celebration h2 {
       font-size: 3rem;
-      color: white;
+      color: #ff4d6d;
       margin-top: 20px;
+      text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+      animation: pop 0.5s ease;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0); }
+      70% { transform: scale(1.2); }
+      100% { transform: scale(1); }
     }
   </style>
 </head>
 <body>
 
   <!-- Background music -->
-  <audio id="bgMusic" src="HIM.mp3" loop></audio>
+  <audio id="bgMusic" src="faf516ea-ee7c-4da7-879a-995dfe174026.mp3" loop></audio>
 
+  <!-- Question screen -->
   <div class="container" id="question">
     <h1>Will you be my Valentine? 💘</h1>
     <button id="yesBtn">YES 💖</button>
     <button id="noBtn">no</button>
   </div>
 
+  <!-- Celebration screen -->
   <div class="container" id="celebration">
     <h2>YAYYYYY!!! 🥰🎉</h2>
     <img src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif" alt="celebration" />
@@ -106,18 +139,19 @@
     const hasVisited = localStorage.getItem("valentineVisited");
     if (!hasVisited) {
       bgMusic.play().catch(() => {
-        // Autoplay may be blocked by browser
         console.log("Autoplay blocked, music will play on first click.");
       });
       localStorage.setItem("valentineVisited", "true");
     }
 
-    // Make the "No" button run away
+    // Make "No" button move but stay on screen
     noBtn.addEventListener("mouseover", () => {
       const btnWidth = noBtn.offsetWidth;
       const btnHeight = noBtn.offsetHeight;
-      const x = Math.random() * (window.innerWidth - btnWidth);
-      const y = Math.random() * (window.innerHeight - btnHeight);
+      const maxX = window.innerWidth - btnWidth;
+      const maxY = window.innerHeight - btnHeight;
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
       noBtn.style.left = `${x}px`;
       noBtn.style.top = `${y}px`;
     });
@@ -129,7 +163,7 @@
       bgMusic.play().catch(() => {});
     });
 
-    // Optional: allow music to start if user interacts anywhere
+    // Fallback: play music on any click
     document.body.addEventListener("click", () => {
       if (bgMusic.paused) bgMusic.play().catch(() => {});
     }, { once: true });
