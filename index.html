@@ -17,6 +17,7 @@
 
     .container {
       text-align: center;
+      position: relative;
     }
 
     h1 {
@@ -46,6 +47,19 @@
       font-size: 1rem;
       padding: 10px 20px;
       position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(10deg); }
+      75% { transform: rotate(-10deg); }
+    }
+
+    #noBtn:hover {
+      animation: wiggle 0.3s;
     }
 
     #celebration {
@@ -68,7 +82,7 @@
 <body>
 
   <!-- Background music -->
-  <audio id="bgMusic" src="HIM.mp3" autoplay loop></audio>
+  <audio id="bgMusic" src="HIM.mp3" loop></audio>
 
   <div class="container" id="question">
     <h1>Will you be my Valentine? 💘</h1>
@@ -88,18 +102,37 @@
     const celebration = document.getElementById("celebration");
     const bgMusic = document.getElementById("bgMusic");
 
+    // Play music only on first visit
+    const hasVisited = localStorage.getItem("valentineVisited");
+    if (!hasVisited) {
+      bgMusic.play().catch(() => {
+        // Autoplay may be blocked by browser
+        console.log("Autoplay blocked, music will play on first click.");
+      });
+      localStorage.setItem("valentineVisited", "true");
+    }
+
+    // Make the "No" button run away
     noBtn.addEventListener("mouseover", () => {
-      const x = Math.random() * (window.innerWidth - 100);
-      const y = Math.random() * (window.innerHeight - 50);
+      const btnWidth = noBtn.offsetWidth;
+      const btnHeight = noBtn.offsetHeight;
+      const x = Math.random() * (window.innerWidth - btnWidth);
+      const y = Math.random() * (window.innerHeight - btnHeight);
       noBtn.style.left = `${x}px`;
       noBtn.style.top = `${y}px`;
     });
 
+    // Show celebration when "Yes" clicked
     yesBtn.addEventListener("click", () => {
       question.style.display = "none";
       celebration.style.display = "block";
-      bgMusic.play(); // ensures music plays if paused
+      bgMusic.play().catch(() => {});
     });
+
+    // Optional: allow music to start if user interacts anywhere
+    document.body.addEventListener("click", () => {
+      if (bgMusic.paused) bgMusic.play().catch(() => {});
+    }, { once: true });
   </script>
 
 </body>
